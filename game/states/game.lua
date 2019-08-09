@@ -1,37 +1,45 @@
 local skipspeed = 4
-local textboxd = true
-bgalpha = 255
-cgalpha = 255
+local audiotell = 0
+local bgalpha = 255
 
 function drawGame()
 	lg.setBackgroundColor(0,0,0)
 	
+	drawTopScreen()
 	lg.setColor(255,255,255,alpha)
 	lg.draw(bgch)
-	lg.draw(cgch)
-	lg.setColor(255,255,255,bgalpha)
-	lg.draw(bgch2)
-	lg.setColor(255,255,255,cgalpha)
-	lg.draw(cgch2)
+	if bgch2 and menu_enabled ~= true then
+		lg.setColor(255,255,255,bgalpha)
+		lg.draw(bgch2)
+	end
 	
 	lg.setColor(255,255,255,alpha)
+	if cg1 ~= '' then lg.draw(cgch) end
 	drawSayori()
 	drawYuri()
 	drawNatsuki()
 	drawMonika()
 	
 	if poem_enabled then drawPoem()	end
-	if textboxd then
+	
+	if menu_enabled and menu_type ~= 'choice' then
+		lg.setColor(255,255,255,menu_alpha/2)
+		lg.rectangle('fill',0,0,400,240)
+	end
+	
+	drawBottomScreen()
+	lg.setColor(255,255,255,alpha)
+	if bgimg_disabled ~= true then lg.draw(background_Image, posX, posY) end
+	lg.setFont(font)
+	if textbox_enabled then
+		drawNumbers()
 		drawTextBox()
 	end
 	
-	lg.setFont(allerfont)
-	lg.setColor(255,255,255,alpha)
-	if dvertype == 'Test' then lg.print(cl,5,690) end
+	lg.setColor(0,0,0)
+	lg.setFont(font)
 	if autotimer > 0 then
-		lg.draw(gui.skip,0,27)
-		lg.setColor(0,0,0)
-		outlineText('Auto-Forward On',5,35)
+		lg.print('Auto-Forward On', 2, 20)
 	elseif autoskip > 0 then
 		local skiptext
 		if sectimer >= 0.75 then
@@ -43,9 +51,18 @@ function drawGame()
 		else
 			skiptext = 'Skipping'
 		end
-		lg.draw(gui.skip,0,27)
-		lg.setColor(0,0,0)
-		outlineText(skiptext,5,35)
+		lg.print(skiptext, 2, 20)
+	end
+	
+	if state ~= 'newgame' and poem_enabled ~= true and event_enabled ~= true then
+		lg.setColor(255,189,225,alpha)
+		lg.rectangle('fill',47,2,40,16) 
+		lg.rectangle('fill',139,2,32,16) 
+		lg.rectangle('fill',237,2,32,16) 
+		lg.setColor(0,0,0,alpha)
+		lg.print('Menu',51,2,0,1,1)
+		lg.print('Auto',142,2,0,1,1)
+		lg.print('Skip',241,2,0,1,1) 
 	end
 	if menu_enabled then menu_draw() end
 end
@@ -54,16 +71,19 @@ function updateGame(dt)
 	scriptCheck()
 	
 	--timercheck
+	local dt = love.timer.getDelta()
 	if xaload == 0 then
-		startTime = getTime
+		myTextStartTime = love.timer.getTime()
 	end
 	xaload = xaload + 1
-	if unitimer < uniduration then
-		unitimer = unitimer + dt
-	end
 	
-	--bgch2 and cgch2 stuff
-	loaderGame()
+	if bgch2 then
+		bgalpha = math.max(bgalpha - dt*1000, 0)
+		if bgalpha == 0 then
+			bgch2 = nil
+			bgalpha = 255
+		end
+	end
 	
 	--auto next script
 	if autotimer == 0 then
@@ -88,32 +108,39 @@ function updateGame(dt)
 		end
 	end
 	
-	if poem_enabled and poem_scroll and not menu_enabled then
-		if g_system == 'Switch' then
-			if joystick:isGamepadDown('dpup') then
-				poem_scroll.y = poem_scroll.y + 0.3
-			elseif joystick:isGamepadDown('dpdown') then
-				poem_scroll.y = poem_scroll.y - 0.3
-			end
-		else
-			if love.keyboard.isDown('up') and poem_scroll.y < 1 then
-				poem_scroll.y = poem_scroll.y + 0.3
-			elseif love.keyboard.isDown('down') then
-				poem_scroll.y = poem_scroll.y - 0.3
-			end
+    if poem_enabled and poem_scroll and not menu_enabled then
+		if joystick:isGamepadDown('dpup') and poem_scroll.y < 1 then
+			poem_scroll.y = poem_scroll.y + dt*10
+		elseif joystick:isGamepadDown('dpdown') then
+			poem_scroll.y = poem_scroll.y - dt*10
 		end
 	end
-	
+    
 	if event_enabled then event_update(dt) end
+	
+	--custom audio looping
+	if audio1 == '7' and persistent.ptr == 2 then
+		audiotell = audiotell + dt
+		if audiotell > 4.1 then audioUpdate('7a') end
+	elseif audio1 == '7g' then
+		audiotell = audiotell + dt
+		if audiotell > 31.75 then audioUpdate('7g2') end
+	elseif audio1 == '3g' then
+		audiotell = audiotell + dt
+		if audiotell > 25.5 and audio1 ~= '3g2' then audioUpdate('3g2') end
+	else
+		audiotell = 0
+	end
 end
 
 function game_keypressed(key)
 	if event_enabled then
 		event_keypressed(key)
 	elseif key == 'y' then --pause menu
-		menu_mchance = math.random(1,50)
 		autotimer = 0
-		menu_enable('pause')
+		if persistent.chr.m == 2 then menu_enable('pause2')
+		else menu_enable('pause')
+		end
 	elseif key == 'b' then --auto on/off
 		sfx1:play()
 		if autotimer == 0 then autotimer = 0.01 else autotimer = 0 end		
@@ -129,22 +156,24 @@ function game_keypressed(key)
 end
 
 function newgame_keypressed(key)
-	if (key == 'a' or key == 'lbutton') and unitimer >= uniduration then 
-		textboxd = true
+	if (key == 'a' or key == 'lbutton') then
 		if print_full_text then
 			autotimer = 0
 			cl = cl + 1 --next script
 			xaload = 0
-			unitimer = 0
+			print_full_text = false
 		else
 			print_full_text = true
 		end
 		collectgarbage()
 		collectgarbage()
-	elseif key == 'r' or key == 'rbutton' or key == 'plus' then
-		textboxd = not textboxd
-	elseif key == 'minus' or key == '-' or key == 'select' then
-		if settings.outline ~= 1 then settings.outline = 1
-		else settings.outline = 0 end
+	end
+end
+
+function game_mousepressed()
+	if mouseX>=50 and mouseX<=80 and mouseY<=18 then game_keypressed('y')
+	elseif mouseX>=142 and mouseX<=172 and mouseY<=18 then game_keypressed('b')
+	elseif mouseX>=240 and mouseX<=270 and mouseY<=18 then game_keypressed('x')
+	else game_keypressed('a')
 	end
 end

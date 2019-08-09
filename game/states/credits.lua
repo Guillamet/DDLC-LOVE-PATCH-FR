@@ -1,16 +1,19 @@
 require 'loader/assets_credits'
 local c_timer = 200
 local c_timer2
-local ra1 = 440
-local ra2 = 415
-local ra3 = 482
-local ra4 = 430
-local ra5 = 488
-local ra6 = 460
+local ra1 = 100
+local ra2 = 92
+local ra3 = 120
+local ra4 = 98
+local ra5 = 126
+local ra6 = 110
 
 function loadCredits(x)
 	if x ~= 1 then
-		logo = lg.newImage('assets/images/cg/credits/ddlc.png')
+		logo = lg.newImage('assets/images/gui/logo.png')
+		
+		halogenfont = lg.newFont('standard',14)
+		rifficfont = lg.newFont('standard',14)
 		
 		audioUpdate('credits')
 		c_timer = 0
@@ -20,112 +23,121 @@ function loadCredits(x)
 end
 
 function drawCredits()
+	drawTopScreen()
 	lg.setBackgroundColor(0,0,0)
 	lg.setColor(255,255,255,alpha)
 	
 	if c_timer < 51 then
 		lg.setFont(m1)
-		lg.print("Every day, I imagine a future where I can be with you",440,200)
-		lg.print("In my hand is a pen that will write a poem of me and you",415,250)
-		lg.print("The ink flows down into a dark puddle",485,300)
-		lg.print("Just move your hand - write the way into his heart!",435,350)
-		lg.print("But in this world of infinite choices",488,400)
-		lg.print("What will it take just to find that special day?",460,450)
+		lg.print("Every day, I imagine a future where I can be with you",100,55)
+		lg.print("In my hand is a pen that will write a poem of me and you",92,75)
+		lg.print("The ink flows down into a dark puddle",120,95)
+		lg.print("Just move your hand - write the way into his heart!",98,115)
+		lg.print("But in this world of infinite choices",126,135)
+		lg.print("What will it take just to find that special day?",110,155)
 		lg.setColor(0,0,0)
-		lg.rectangle('fill',ra1,200,960,60)
-		lg.rectangle('fill',ra2,250,960,60)
-		lg.rectangle('fill',ra3,300,960,60)
-		lg.rectangle('fill',ra4,350,960,60)
-		lg.rectangle('fill',ra5,400,960,60)
-		lg.rectangle('fill',ra6,450,960,60)
+		lg.rectangle('fill',ra1,55,300,20)
+		lg.rectangle('fill',ra2,75,300,20)
+		lg.rectangle('fill',ra3,95,300,20)
+		lg.rectangle('fill',ra4,115,300,20)
+		lg.rectangle('fill',ra5,135,300,20)
+		lg.rectangle('fill',ra6,155,300,20)
 	elseif c_timer < 60 then
-		lg.draw(logo)
+		lg.draw(logo,145,70)
 	elseif c_timer < 165 then
-		lg.draw(nats1, 600, 750 - c_timer2)
-		lg.draw(nats2, 80, 1536 - c_timer2)
-		lg.draw(yuri1, 600, 2130 - c_timer2)
-		lg.draw(yuri2, 80, 2820 - c_timer2)
-		lg.draw(nats3, 600, 3510 - c_timer2)
-		lg.draw(yuri3, 80, 4200 - c_timer2)
-		lg.draw(sayo1, 600, 4890 - c_timer2)
-		lg.draw(sayo2, 80, 5580 - c_timer2)
-		lg.draw(s_sticker_1, 360, 6180 - c_timer2)
-		lg.draw(n_sticker_1, 490, 6180 - c_timer2)
-		lg.draw(y_sticker_1, 660, 6180 - c_timer2)
-		lg.draw(m_sticker_1, 810, 6180 - c_timer2)
-		lg.draw(sayo3, 600, 6810 - c_timer2)
-		lg.draw(moni1, 80, 7500 - c_timer2)
+		lg.draw(nats1, 180, 250 - c_timer2)
+		lg.draw(nats2, 20, 480 - c_timer2)
+		lg.draw(yuri1, 180, 710 - c_timer2)
+		lg.draw(yuri2, 20, 940 - c_timer2)
+		lg.draw(nats3, 180, 1170 - c_timer2)
+		lg.draw(yuri3, 20, 1400 - c_timer2)
+		lg.draw(sayo1, 180, 1630 - c_timer2)
+		lg.draw(sayo2, 20, 1860 - c_timer2)
+		lg.draw(s_sticker_1, 45, 2060 - c_timer2)
+		lg.draw(n_sticker_1, 115, 2060 - c_timer2)
+		lg.draw(y_sticker_1, 200, 2060 - c_timer2)
+		lg.draw(m_sticker_1, 275, 2060 - c_timer2)
+		lg.draw(sayo3, 180, 2270 - c_timer2)
+		lg.draw(moni1, 20, 2500 - c_timer2)
 		lg.setFont(halogenfont)
-		lg.print("Dan Salvato",225,930 - c_timer2)
-		lg.print("Satchely",920,1620 - c_timer2)
-		lg.print("Velinquent",243,2310 - c_timer2)
-		lg.print("Dan Salvato",870,3000 - c_timer2)
-		lg.print("Dan Salvato",210,3690 - c_timer2)
-		lg.print("Jillian Ashcraft",870,4380 - c_timer2)
-		lg.print("Masha Gutin",229,5055 - c_timer2)
-		lg.print("Kagefumi",245,5100 - c_timer2)
-		lg.print("David Evelyn",873,5745 - c_timer2)
-		lg.print("Corey Shin",883,5790 - c_timer2)
-		lg.print("Alecia Bardachino",200,6975 - c_timer2)
-		lg.print("Matt Naples",220,7020 - c_timer2)
-		lg.print("Monika",903,7665 - c_timer2)
-		lg.print(player,910,7710 - c_timer2)
+		lg.print("Dan Salvato",60,310 - c_timer2)
+		lg.print("Satchely",280,540 - c_timer2)
+		lg.print("Velinquent",76,770 - c_timer2)
+		lg.print("Dan Salvato",270,1000 - c_timer2)
+		lg.print("Dan Salvato",60,1230 - c_timer2)
+		lg.print("Jillian Ashcraft",261,1460 - c_timer2)
+		lg.print("Masha Gutin",70,1685 - c_timer2)
+		lg.print("Kagefumi",78,1700 - c_timer2)
+		lg.print("David Evelyn",268,1915 - c_timer2)
+		lg.print("Corey Shin",273,1930 - c_timer2)
+		lg.print("Alecia Bardachino",58,2325 - c_timer2)
+		lg.print("Matt Naples",68,2340 - c_timer2)
+		lg.print("Monika",279,2555 - c_timer2)
+		lg.print(player,281,2570 - c_timer2)
 		lg.setColor(255,185,230)
 		lg.setFont(rifficfont)
-		lg.print("Concept and Game Design",144,855 - c_timer2)
-		lg.print("Character Art",880,1545 - c_timer2)
-		lg.print("Background Art",210,2235 - c_timer2)
-		lg.print("Writing",890,2925 - c_timer2)
-		lg.print("Music",246,3615 - c_timer2)
-		lg.print("Vocals",917,4305 - c_timer2)
-		lg.print("Special Thanks",210,4980 - c_timer2)
-		lg.print("Special Thanks",860,5670 - c_timer2)
-		lg.print("Special Thanks",210,6900 - c_timer2)
-		lg.print("Special Thanks",860,7590 - c_timer2)
+		lg.print("Concept and Game Design",5,285 - c_timer2)
+		lg.print("Character Art",260,515 - c_timer2)
+		lg.print("Background Art",58,745 - c_timer2)
+		lg.print("Writing",280,975 - c_timer2)
+		lg.print("Music",77,1205 - c_timer2)
+		lg.print("Vocals",280,1435 - c_timer2)
+		lg.print("Special Thanks",52,1660 - c_timer2)
+		lg.print("Special Thanks",252,1890 - c_timer2)
+		lg.print("Special Thanks",52,2300 - c_timer2)
+		lg.print("Special Thanks",252,2530 - c_timer2)
 	elseif c_timer < 200 then
 		lg.draw(splashw)
-		lg.setFont(allerfont)
-		lg.print('DDLC-LOVE',5,615)
-		lg.print(tr.splash[16],5,645)
+		lg.setFont(font)
+		lg.print('DDLC-3DS',2,205)
+		lg.print('Port non-officiel par LukeeGD',2,220)
+		lg.print('Traduction FR',2,220)
 	end
 	
-	lg.setColor(255,255,255)
-	lg.setFont(allerfont)
 	drawConsole()
+	
+	drawBottomScreen()
+	lg.setColor(0,0,0)
+	lg.rectangle('fill',-40,0,400,240)
+	lg.setColor(255,255,255)
+	lg.setFont(font)
+	--lg.print(c_timer)
 end
 
 function updateCredits(dt)
 	c_timer = c_timer + dt
-	c_timer2 = (c_timer - 60) * 75
+	c_timer2 = (c_timer - 60) * 25
+	
+	
 	--lyrics part stuff
 	if c_timer >= 10.3 and c_timer <= 11.4 then
-		ra1 = math.min(ra1 + 3, 505)
+		ra1 = math.min(ra1 + 1.25, 135)
 	elseif c_timer >= 11.7 and c_timer <= 13.55 then
-		ra1 = math.min(ra1 + 3, 683)
+		ra1 = math.min(ra1 + 1.25, 215)
 	elseif c_timer >= 13.7 and c_timer <= 16 then
-		ra1 = math.min(ra1 + 3, 1000)
+		ra1 = math.min(ra1 + 1.25, 400)
 	elseif c_timer >= 19.4 and c_timer <= 20.65 then
-		ra2 = math.min(ra2 + 3, 495)
+		ra2 = math.min(ra2 + 1.25, 132)
 	elseif c_timer >= 20.8 and c_timer <= 23 then
-		ra2 = math.min(ra2 + 3, 730)
+		ra2 = math.min(ra2 + 1.25, 245)
 	elseif c_timer >= 23.2 and c_timer <= 26 then
-		ra2 = math.min(ra2 + 3, 1000)
+		ra2 = math.min(ra2 + 1.25, 400)
 	elseif c_timer >= 28.3 and c_timer <= 30 then
-		ra3 = math.min(ra3 + 3, 615)
+		ra3 = math.min(ra3 + 1.25, 185)
 	elseif c_timer >= 30.1 and c_timer <= 32.4 then
-		ra3 = math.min(ra3 + 3, 1000)
+		ra3 = math.min(ra3 + 1.25, 400)
 	elseif c_timer >= 32.8 and c_timer <= 34.2 then
-		ra4 = math.min(ra4 + 3, 580)
+		ra4 = math.min(ra4 + 1.25, 170)
 	elseif c_timer >= 34.3 and c_timer <= 37 then
-		ra4 = math.min(ra4 + 3, 1000)
+		ra4 = math.min(ra4 + 1.25, 400)
 	elseif c_timer >= 37.5 and c_timer <= 39.1 then
-		ra5 = math.min(ra5 + 3, 615)
+		ra5 = math.min(ra5 + 1.25, 188)
 	elseif c_timer >= 39.2 and c_timer <= 41.7 then
-		ra5 = math.min(ra5 + 3, 1000)
+		ra5 = math.min(ra5 + 1.25, 400)
 	elseif c_timer >= 42 and c_timer < 43.3 then
-		ra6 = math.min(ra6 + 3, 580)
+		ra6 = math.min(ra6 + 1.25, 165)
 	elseif c_timer >= 43.4 and c_timer < 50 then
-		ra6 = math.min(ra6 + 3, 1000)
+		ra6 = math.min(ra6 + 1.25, 400)
 	end
 	
 	--fade in and out stuff
@@ -159,38 +171,37 @@ function updateCredits(dt)
 		end
 	end
 	
-	--credits assets stuff
 	loaderCredits(c_timer)
 	
 	--fake console stuff
 	if c_timer >= 157 and c_timer < 158 then
 		updateConsole("os.remove(\"draw.lua\")")
 	elseif c_timer >= 158 and c_timer < 159 then
-		updateConsole("_","draw.lua deleted successfully.")
+		updateConsole("_","draw.lua supprimé.")
 	elseif c_timer >= 159 and c_timer < 160 then
-		updateConsole("os.remove(\"resources.lua\")","draw.lua deleted successfully.")
+		updateConsole("os.remove(\"resources.lua\")","draw.lua supprimé.")
 	elseif c_timer >= 160 and c_timer < 161 then
-		updateConsole("_","resources.lua deleted successfully.","draw.lua deleted successfully.")
+		updateConsole("_","resources.lua supprimé.","draw.lua supprimé.")
 	elseif c_timer >= 161 and c_timer < 162 then
-		updateConsole("os.remove(\"menu.lua\")","resources.lua deleted successfully.","draw.lua deleted successfully.")
+		updateConsole("os.remove(\"menu.lua\")","resources.lua supprimé.","draw.lua supprimé.")
 	elseif c_timer >= 162 and c_timer < 163 then
-		updateConsole("_","menu.lua deleted successfully.","resources.lua deleted successfully.","draw.lua deleted successfully.")
+		updateConsole("_","menu.lua supprimé.","resources.lua supprimé.")
 	elseif c_timer >= 163 and c_timer < 164 then
-		updateConsole("os.remove(\"scripts/script.lua\")","menu.lua deleted successfully.","resources.lua deleted successfully.","draw.lua deleted successfully.")
+		updateConsole("os.remove(\"scripts/script.lua\")","menu.lua supprimé.","resources.lua supprimé.")
 	elseif c_timer >= 164 and c_timer < 165 then
-		updateConsole("_","script.lua deleted successfully.","menu.lua deleted successfully.","resources.lua deleted successfully.")
+		updateConsole("_","script.lua supprimé.","menu.lua supprimé.")
 	elseif c_timer >= 165 then
 		console_enabled = false
 	end
 	
 	if c_timer >= 200 and c_timer < 201.5 then
-		updateConsole("ddlc=love.audio.newSource(\"ddlc"..audio_ext.."\")")
+		updateConsole("ddlc=love.audio.newSource(\"ddlc.ogg\")")
 	elseif c_timer >= 201.5 and c_timer < 202.5 then
 		updateConsole("_")
 	elseif c_timer >= 202.5 and c_timer < 203.5 then
 		updateConsole("love.audio.play(ddlc)")
 	elseif c_timer >= 203.5 and c_timer < 205 then
-		updateConsole("_","Playing audio \"ddlc"..audio_ext.."\"...")
+		updateConsole("_","Lecture de l'audio \"ddlc.ogg\"...")
 	elseif c_timer >= 205 then
 		console_enabled = false
 		changeState('credits')

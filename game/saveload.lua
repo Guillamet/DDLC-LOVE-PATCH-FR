@@ -4,20 +4,19 @@ persistent = {
 	ptr=0;
 	clear={0,0,0,0,0,0,0,0,0};
 	chr={m=1,s=1};
-	act2={0,0,0,0};
 }
 sp = {math.random(1, 11),math.random(1, 11),math.random(1, 11)}
-settings = {textspd=100,autospd=4,masvol=70,bgmvol=70,sfxvol=70,lang='eng',outline=0}
+settings = {textspd=100,textloc='Bottom',autospd=4}
 --default save values
 cl = 1
 bg1 = 'black'
 audio1 = '0'
-cg1 = 'blank'
+cg1 = ''
 ct = ''
-s_Set = {a='',b='',x=-200,y=4}
-y_Set = {a='',b='',x=-200,y=4}
-n_Set = {a='',b='',x=-200,y=4}
-m_Set = {a='',b='',x=-200,y=4}
+s_Set = {a='',b='',x=-200,y=0}
+y_Set = {a='',b='',x=-200,y=0}
+n_Set = {a='',b='',x=-200,y=0}
+m_Set = {a='',b='',x=-200,y=0}
 chapter = 0
 readpoem = {s=0,n=0,y=0,m=0}
 choices = {'','','',''}
@@ -72,59 +71,21 @@ end
 
 function loadgame(x)
 	local savfile
-	if global_os == 'LOVE-WrapLua' then
-		if x == 'autoload' then
-			love.filesystem.load("save-autoload.sav")
-		else
-			love.filesystem.load("save"..savenumber.."-"..persistent.ptr..".sav")
-		end
+	if x == 'autoload' then
+		savfile = loadstring(love.filesystem.read("save-autoload.sav"))
 	else
-		if x == 'autoload' then
-			savfile = loadstring(love.filesystem.read("save-autoload.sav"))
-		else
-			savfile = loadstring(love.filesystem.read("save"..savenumber.."-"..persistent.ptr..".sav"))
-		end
-		savfile()
+		savfile = loadstring(love.filesystem.read("save"..savenumber.."-"..persistent.ptr..".sav"))
 	end
-end
-
-function savedatainfo(save)
-	local datainfo = "save"..save.."={bg1='"..bg1.."',date='"..os.date("%Y-%m-%d %H:%M").."'}"
-	love.filesystem.write("save"..savenumber.."-"..persistent.ptr.."_data.sav", datainfo)
-end
-
-function loaddatainfo(save)
-	if global_os == 'LOVE-WrapLua' then
-		love.filesystem.load("save"..save.."-"..persistent.ptr.."_data.sav")
-	else
-		local datainfo = loadstring(love.filesystem.read("save"..save.."-"..persistent.ptr.."_data.sav"))
-		if datainfo then datainfo("save"..save.."-"..persistent.ptr.."_data.sav") end
-	end
+	savfile()
 end
 
 function savesettings()
-	local setfile = "settings={"
-	setfile = setfile.."textspd="..settings.textspd..","
-	setfile = setfile.."autospd="..settings.autospd..","
-	setfile = setfile.."masvol="..settings.masvol..","
-	setfile = setfile.."bgmvol="..settings.bgmvol..","
-	setfile = setfile.."sfxvol="..settings.sfxvol..","
-	setfile = setfile.."lang='"..settings.lang.."'}"
-	love.filesystem.write("settings.sav", setfile)
-end
-
-function loadsettings()
-	if global_os == 'LOVE-WrapLua' then
-		love.filesystem.load('settings.sav')
-	else
-		local settingsfile = loadstring(love.filesystem.read('settings.sav'))
-		if settingsfile then settingsfile() end
-	end
+	local settingsfile = "settings={textspd="..settings.textspd..",textloc='"..settings.textloc..",autospd="..settings.autospd.."}"
+	love.filesystem.write("settings.sav", settingsfile)
 end
 
 function savepersistent()
 	local pset = ''
-	local act2 = ''
 	for i = 1, #persistent.clear do
 		if persistent.clear[i] and persistent.clear[i+1] then
 			pset = pset..persistent.clear[i]..","
@@ -132,16 +93,8 @@ function savepersistent()
 			pset = pset..persistent.clear[i]
 		end
 	end
-	for i = 1, #persistent.act2 do
-		if persistent.act2[i] and persistent.act2[i+1] then
-			act2 = act2..persistent.act2[i]..","
-		elseif persistent.clear[i] then
-			act2 = act2..persistent.act2[i]
-		end
-	end
 	local spfile = "player='"..player.."'\
 persistent={ptr="..persistent.ptr..",chr={m="..persistent.chr.m..",s="..persistent.chr.s.."},\
-act2={"..act2.."},\
 clear={"..pset.."}};\
 sp={"..sp[1]..','..sp[2]..','..sp[3]..'}'
 	
@@ -149,10 +102,8 @@ sp={"..sp[1]..','..sp[2]..','..sp[3]..'}'
 end
 
 function loadpersistent()
-	if global_os == 'LOVE-WrapLua' then
-		love.filesystem.load('persistent')
-	else
-		local pfile = loadstring(love.filesystem.read('persistent'))
-		if pfile then pfile() end
-	end
+	local pfile = loadstring(love.filesystem.read('persistent'))
+	local settingsfile = loadstring(love.filesystem.read('settings.sav'))
+	if pfile then pfile() end
+	if settingsfile then settingsfile() end
 end

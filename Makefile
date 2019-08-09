@@ -6,84 +6,103 @@ define n
 
 endef
 
-ifeq ($(strip $(DEVKITPRO)),)
-$(error "Please set DEVKITPRO in your environment.$nexport DEVKITPRO=<path to>/devkitpro")
+ifeq ($(strip $(DEVKITARM)),)
+$(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>devkitARM")
 endif
 
-ifeq ($(strip $(LOVEPOTION_SWITCH)),)
+ifeq ($(strip $(LOVEPOTION_3DS)),)
 
 export ERR_MSG := \
-$nPlease set LOVEPOTION_SWITCH in your environment.\
+$nPlease set LOVEPOTION_3DS in your environment.\
 $nThis should be the path to your Love Potion projects.\
 $nDo *NOT* save the *.elf file anywhere else.\
-$nexport LOVEPOTION_SWITCH=<path to>/LovePotion.elf
+$nexport LOVEPOTION_3DS=<path to>/LovePotion.elf
 $(error $(ERR_MSG))
 endif
 
-TOPDIR = $(CURDIR)
-include $(DEVKITPRO)/libnx/switch_rules
+TOPDIR ?= $(CURDIR)
+include $(DEVKITARM)/3ds_rules
 
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output files
 # BUILD is the directory where object files & intermediate files will be placed
-# ROMFS is the directory containing your LOVE game (can be external from this directory)
-# An external project could be such as ../../MyProject
+# ROMFS is the directory containing your LOVE game
 #
-# APP_TITLE is the name of the app stored in the .nacp file (Optional)
-# APP_AUTHOR is the author of the app stored in the .nacp file (Optional)
-# APP_VERSION is the version of the app stored in the .nacp file (Optional)
-# APP_TITLEID is the titleID of the app stored in the .nacp file (Optional)
+# APP_TITLE is the name of the app stored in the .3dsx file (Optional)
+# APP_AUTHOR is the author of the app stored in the .3dsx file (Optional)
+# APP_VERSION is the version of the app stored in the .3dsx file (Optional)
+# APP_DESCRIPTION is the description of the application
 #
-# ICON is the filename of the icon (.jpg), relative to the project folder.
-#   If not set, it attempts to use one of the following (in this order):
-#     - <Project name>.jpg
-#     - icon.jpg
-#     - <libnx folder>/default_icon.jpg
+# ICON is the filename of the icon (.png), relative to the project folder.
 #---------------------------------------------------------------------------------
-TARGET          := $(notdir $(CURDIR))
-BUILD           := $(TOPDIR)
+TARGET			:= $(notdir $(CURDIR))
 
-ROMFS           := game
+BUILD			:= build
+GAME			:= game
 
-APP_TITLE       := DDLC-LOVE
-APP_AUTHOR      := LukeeGD
-APP_TITLEID     := DDFC
-APP_VERSION     := 0.4
-APP_DESCRIPTION := An unofficial port of DDLC for the Switch, PSP, and PS Vita
+APP_TITLE		:= DDLC-LOVE
+APP_AUTHOR		:= LukeZGD
+APP_VERSION		:= 1.1
+APP_DESCRIPTION := An unofficial port of DDLC for the 3DS
 
-ICON            := icon.jpg
+ICON			:= icon.png
 
-export OUTPUT   := $(TARGET)
-export TOPDIR   := $(CURDIR)
+ROMFS			:= $(BUILD)/game
+
+#---------------------------------------------------------------------------------
+# build options
+#---------------------------------------------------------------------------------
+
+export OUTPUT    :=    $(TARGET)
+export TOPDIR    :=    $(CURDIR)
+
+GFXFILES := $(shell find $(GAME) -name '*.png' -o -name '*.jpg')
+
+export ROMFS_T3XFILES	:=	$(patsubst %.png, $(BUILD)/%.t3x, $(GFXFILES))
 
 ifeq ($(strip $(ICON)),)
-	icons := $(wildcard *.jpg)
-	ifneq (,$(findstring $(TARGET).jpg,$(icons)))
-		export APP_ICON := $(TOPDIR)/$(TARGET).jpg
+	icons := $(wildcard *.png)
+	ifneq (,$(findstring $(TARGET).png,$(icons)))
+		export APP_ICON := $(TOPDIR)/$(TARGET).png
 	else
-		ifneq (,$(findstring icon.jpg,$(icons)))
-			export APP_ICON := $(TOPDIR)/icon.jpg
+		ifneq (,$(findstring icon.png,$(icons)))
+			export APP_ICON := $(TOPDIR)/icon.png
 		endif
 	endif
 else
 	export APP_ICON := $(TOPDIR)/$(ICON)
 endif
 
-all: $(OUTPUT).nacp $(OUTPUT).nro
-
-clean:
-	@echo clean ...
-	@rm -fr $(TARGET).pfs0 $(TARGET).nso $(TARGET).nro $(TARGET).nacp
-
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
 
-$(OUTPUT).nacp:
-	@nacptool --create "$(APP_TITLE)" "$(APP_AUTHOR)" "$(APP_VERSION)" $@
 
-$(OUTPUT).nro : $(OUTPUT).nacp
-	@elf2nro $(LOVEPOTION_SWITCH) $(OUTPUT).nro \
-	--icon=$(APP_ICON) \
-	--nacp=$(OUTPUT).nacp \
-	--romfsdir=$(ROMFS)
+all: raw $(OUTPUT).smdh $(OUTPUT).3dsx
+
+raw: $(BUILD) $(ROMFS_T3XFILES)
+
+clean:
+	@echo clean ...
+	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh
+
+
+$(BUILD):
+	@mkdir -p $@
+	@cp -r $(GAME) $@
+
+$(OUTPUT).smdh:
+	@echo "Building smdh.."
+	@smdhtool --create "$(APP_TITLE)" "$(APP_DESCRIPTION)" "$(APP_AUTHOR)" "$(APP_ICON)" $@
+
+$(OUTPUT).3dsx:
+	@echo "Building 3dsx.."
+	@3dsxtool $(LOVEPOTION_3DS) $@ --smdh=$(OUTPUT).smdh --romfs=$(ROMFS)
+
+#---------------------------------------------------------------------------------
+# Create our t3x files
+#---------------------------------------------------------------------------------
+$(BUILD)/%.t3x:
+#---------------------------------------------------------------------------------
+	@tex3ds $*.png --atlas -f rgba8888 -z auto -o $(BUILD)/$*.t3x
+	@rm "$(BUILD)/$*.png"

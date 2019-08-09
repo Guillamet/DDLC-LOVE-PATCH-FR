@@ -1,6 +1,7 @@
+
 function bgUpdate(bgx, forceload) --background changes
 	if bgx == 'club_day2' then
-		local bgclub_day = math.random(1,6)
+		local bgclub_day = math.random(1, 6)
 		if bgclub_day == 6 then
 			bgx = 'club-skill'
 		else
@@ -9,40 +10,51 @@ function bgUpdate(bgx, forceload) --background changes
 	end
 	
 	if xaload == 0 or forceload then
-		if autoskip == 0 and not forceload then bgch2 = bgch end
-		bgch = nil		
-		bgch = lg.newImage('assets/images/bg/'..bgx..'.png')
+		--[[
+		if not bglisted then
+			bgloaded = {}
+			bglisted = love.filesystem.getDirectoryItems('assets/images/bg')
+			for i,v in pairs(bglisted) do
+				if (string.sub(v,-4) ~= '.png' and g_system ~= '3DS')
+				or (string.sub(v,-4) ~= '.t3x' and g_system == '3DS') then
+					bglisted[i] = nil
+				end
+			end
+			
+			for i,v in pairs(bglisted) do
+				if bglisted[i] then bgloaded[v] = lg.newImage('assets/images/bg/'..v) end
+			end
+		end
+		bgch = bgloaded[bgx..'.png'] --or t3x for 3ds
+		]]
+		
+		if not bgloaded then
+			bgloaded = {}
+		end
+		
+		if bgx ~= '' then
+			--if autoskip == 0 and forceload ~= true then bgch2 = bgch end
+			if not bgloaded[bgx] then
+				bgloaded[bgx] = lg.newImage('assets/images/bg/'..bgx..'.png')
+			end
+			bgch = bgloaded[bgx]
+		end
 	end	
 	bg1 = bgx
 end
 
 function cgUpdate(cgx, forceload) --cg changes
 	if cg1 ~= cgx or forceload then
-		if autoskip == 0 and not forceload then cgch2 = cgch end
-		cgch = nil		
-		cgch = lg.newImage('assets/images/cg/'..cgx..'.png')
+		if not cgloaded then
+			cgloaded = {}
+		end
+		
+		if cgx ~= '' then
+			if not cgloaded[cgx] then
+				cgloaded[cgx] = lg.newImage('assets/images/cg/'..cgx..'.png')
+			end
+			cgch = cgloaded[cgx]
+		end
 	end	
 	cg1 = cgx
-end
-
-function cgHide()
-	cgUpdate('blank')
-end
-
-function loaderGame()
-	if bgch2 then
-		bgalpha = math.max(bgalpha - 15, 0)
-		if bgalpha == 0 then
-			bgalpha = 255
-			bgch2 = nil
-		end
-	end
-	
-	if cgch2 then
-		cgalpha = math.max(cgalpha - 15, 0)
-		if cgalpha == 0 then
-			cgalpha = 255
-			cgch2 = nil
-		end
-	end
 end

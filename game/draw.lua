@@ -1,15 +1,53 @@
 lg = love.graphics
-local xps = {c=260,ct=285,textbox=230,namebox=260}
-local yps = {c={593,623,653,683},ct=532,textbox=565,namebox=526}
-local gui_ctc_x = 1015
+local drawbottom
+local xps = {}
+local yps = {}
 local xh
 local yh
-
 local with_r = {'1','1b','2','2b','3','3b','4','4b'}
 local with_yr = {'1','1b','2','2b','3','3b'}
-changeX = {s={x=0,y=0,z=0},y={x=0,y=0,z=0},n={x=0,y=0,z=0},m={x=0,y=0,z=0}}
-unitimer = 0
-uniduration = 0.25
+
+function drawTopScreen()
+	if drawbottom == 1 then
+		lg.pop()
+		drawbottom = 0
+	elseif global_os == 'Horizon' then
+		lg.setScreen('top')
+		if pcall(love.graphics.set3D, true) == true then
+			love.graphics.setDepth(2)
+		end
+	end
+end
+
+function drawTopScreenWith2D()
+	if drawbottom == 1 then
+		lg.pop()
+		drawbottom = 0
+	elseif global_os == 'Horizon' then
+		lg.setScreen('top')
+		if pcall(love.graphics.set3D, true) == true then
+			love.graphics.setDepth(0)
+		end
+	end
+end
+
+function drawBottomScreen()
+	if global_os ~= 'Horizon' then
+		lg.push()
+		lg.translate((400 - 320) / 2, 240)
+		drawbottom = 1
+	else
+		lg.setScreen('bottom')
+	end
+end
+
+local oldNewImage = lg.newImage
+function lg.newImage(path)
+    if g_system == '3DS' then
+		path = path:gsub(".png", ".t3x")
+	end
+    return oldNewImage(path)
+end
 
 --compatiblity for LOVE 11 and above
 local lgsetColor = lg.setColor
@@ -34,59 +72,19 @@ function lg.draw(drawable, ...)
 	end
 end
 
-function outlineText(text,x,y,type,arg1)
-	if g_system == 'PSP' or g_system == 'PS3' or settings.outline == 1 then
-		lg.setColor(0,0,0,alpha)
-	else
-		local addm = 1.25
-		if type == 'ct' then
-			lg.setColor(187,85,153,alpha)
-			addm = 2
-		elseif style_edited and (type == 'c_disp' or type == 'printf') then
-			lg.setColor(255,255,255,alpha)
-		else
-			lg.setColor(0,0,0,alpha)
-		end
-		if type == 'printf' and global_os ~= 'LOVE-WrapLua' then
-			lg.printf(text,x-addm,y,arg1)
-			lg.printf(text,x,y-addm,arg1)
-			lg.printf(text,x+addm,y,arg1)
-			lg.printf(text,x,y+addm,arg1)
-		else
-			lg.print(text,x-addm,y)
-			lg.print(text,x,y-addm)
-			lg.print(text,x+addm,y)
-			lg.print(text,x,y+addm)
-		end
-		if style_edited and (type == 'c_disp' or type == 'printf') then
-			lg.setColor(0,0,0,alpha)
-		else
-			lg.setColor(255,255,255,alpha)
-		end
-	end
-	if type == 'printf' and global_os ~= 'LOVE-WrapLua' then
-		lg.printf(text,x,y,arg1)
-	else
-		lg.print(text,x,y)
-	end
-end
-
-function dripText(text,cps,sTime)
+function dripText(text,charactersPerSecond,startTime)
 	if text ~= last_text then
-		sTime = love.timer.getTime()
-		startTime = sTime
+		startTime = love.timer.getTime()
+		myTextStartTime = startTime
 		last_text = text
 		print_full_text = false
 	end
-	
-	local cTime = getTime
-	local sTime2
-	local length
-	
-	if (cTime <= sTime) or sTime == 0 then return '' end
-	if cTime > sTime then sTime2 = getTime end
-	if not cps then cps = 100 end
-	length = math.floor((cTime-sTime)*cps)
+
+	currentTime = love.timer.getTime()
+	if (currentTime <= startTime) or startTime == 0 then return '' end
+	if currentTime > startTime then myTextStartTime2 = love.timer.getTime() end
+	if charactersPerSecond == nil then charactersPerSecond = 100 end
+	length = math.floor((currentTime-startTime)*charactersPerSecond)
 	length = math.max(length,1)
 	length = math.min(length,text:len())
 
@@ -99,32 +97,13 @@ function dripText(text,cps,sTime)
 	else
 		print_full_text = false
 	end
-	
+
 	return text:sub(1,length)
 end
 
 function easeQuadOut(t,b,c,d)
 	t = t / d
 	return -(c) * t*(t-2) + b
-end
-
-function easeQuadInOut(t,b,c,d)
-	t = t/(d/2)
-	if (t < 1) then
-		return c/2*t*t + b
-	else
-		return -c/2 * ((t-1) * (t-3) - 1) + b
-	end
-end
-	
-function easeCubicInOut(t,b,c,d)
-	t = t/(d/2)
-	if (t < 1) then
-		return c/2*t*t*t + b
-	else
-		t = t - 2
-		return c/2*(t*t*t + 2) + b
-	end
 end
 
 function fadeOut(x)
@@ -154,179 +133,174 @@ function fadeOut(x)
 	end
 end
 
+function cgHide()
+	cg1 = ''
+	cgch = nil
+end
+
 function drawTextBox()
-	if sectimer >= 0.5 then
-		gui_ctc_x = math.max(gui_ctc_x - 0.1, 1015)
+	if settings.textloc == 'Top' then
+		xps = {c=48,ct=63,textbox=40,namebox=52}
+		yps = {c=166,ct=142,textbox=162,namebox=142}
+		drawTopScreen()
 	else
-		gui_ctc_x = math.min(gui_ctc_x + 0.1, 1020)
+		xps = {c=8,ct=23,textbox=0,namebox=12}
+		yps = {c=66,ct=42,textbox=62,namebox=42}
 	end
+	
+	if style_edited then lg.setFont(deffont) end
 	
 	if (not menu_enabled or (event_enabled and textbox_enabled)) and not poem_enabled then
 		lg.setColor(255,255,255,alpha)
 		if ct ~= '' then lg.draw(namebox, xps.namebox, yps.namebox) end
 		lg.draw(textbox, xps.textbox, yps.textbox)
-		if gui_ctc_t then lg.draw(gui.ctc, gui_ctc_x, 685) end
-		
 		lg.setColor(0,0,0,alpha)
-		lg.setFont(rifficfont)
-		outlineText(ct,xps.ct,yps.ct,'ct')
-		
-		if style_edited then
-			lg.setFont(deffont)
-		else
-			lg.setFont(allerfont)
-		end
-		if c_disp[1] and g_system == 'PS3' then
-			for i = 1, #c_disp do
-				outlineText(c_disp[i],xps.c,yps.c[i],'c_disp')
-			end
-		elseif c_disp[1] then
-			outlineText(c_disp[1],xps.c,yps.c[1],'c_disp')
+		lg.print(ct,xps.ct,yps.ct)
+		if c_disp then
+			lg.print(c_disp,xps.c,yps.c)
 		end
 	end
+	if settings.textloc == 'Top' then drawBottomScreen() end
 end
 
 function drawPoem()
 	if poembg then
-		lg.draw(poembg, 240, 0)
-	elseif yuri_3 then
-		lg.setColor(255,0,0,192)
-		lg.rectangle('fill',240,0,800,720)
+		lg.draw(poembg, 40, 0)
 	else
 		lg.setColor(243,243,243)
-		lg.rectangle('fill',240,0,800,720)
+		lg.rectangle('fill',40,0,320,240)
 	end
-	if poem_author == 'monika' then
-		lg.setFont(m1)
-	elseif poem_author == 'yuri' and not yuri_3 then
-		lg.setFont(y1)
-	elseif poem_author == 'sayori' then
-		lg.setFont(s1)
-	elseif poem_author == 'natsuki' then
-		lg.setFont(n1)
-	end
+    lg.setFont(m1)
 	lg.setColor(0,0,0)
 	if poemtext and poem_scroll then
 		for i = 1, #poemtext do
 			if poemtext[i] then
-				lg.print(poemtext[i],250+(poem_scroll.x*30)-30,((poem_scroll.y*24)+(i*30))-25)
+				lg.print(poemtext[i],35+(poem_scroll.x*10),(poem_scroll.y*8)+(i*14)-14)
 			end
 		end
 	end
+end
+
+function drawNumbers()
+	if bgimg_disabled then 
+		lg.setColor(255,255,255,255)
+	else
+		lg.setColor(0,0,0,255)
+	end
+	lg.print(cl,2,2)
 end
 
 function drawConsole()
 	if console_enabled then
 		lg.setColor(51,51,51,191)
-		lg.rectangle('fill',0,0,480,180)
+		lg.rectangle('fill',0,0,320,60)
 		lg.setColor(255,255,255)
-		lg.setFont(consolefont)
+		lg.setFont(deffont)
 		lg.print('> '..console_text1,0,0)
-		lg.print(console_text2,15,30)
-		lg.print(console_text3,15,50)
-		lg.print(console_text4,15,70)
+		lg.print(console_text2,5,15)
+		lg.print(console_text3,5,30)
 	end
 end
-
-function nearest(a,b)
-	if (a == b + 1) or  (a == b - 1) or (a == b + 2) or (a == b - 2) or (a == b + 3) or (a == b - 3) then
-		return true
-	else
-		return false
-	end
-end
-
---Character draw functions in 1.0.2
 
 function updateCharacter(set,a,b,px,py,chset)
+	--[[
+	if set == s_Set then
+		unloadSayori()
+	elseif set == y_Set then
+		unloadYuri()
+	elseif set == n_Set then
+		unloadNatsuki()
+	elseif set == m_Set then
+		unloadMonika()
+	end
+	]]
+	
 	if not b then b = '' end
 	set.a = a
 	set.b = b
-	
-	if px and xaload == 0 then
-		chset.x = set.x
-		chset.y = px*3.2
-		if chset.x < chset.y then
-			chset.z = chset.y - chset.x
-		elseif chset.x > chset.y then
-			chset.z = chset.x - chset.y
-		else
-			chset.z = 0
-		end
+    if px then
+		set.x = px
 	end
 	if py then set.y = py end
 end
 
 function updateSayori(a,b,px,py)
-	updateCharacter(s_Set,a,b,px,py,changeX.s)
+	updateCharacter(s_Set,a,b,px,py)
 	if xaload == 0 then loadSayori() end
 end
 
 function updateYuri(a,b,px,py)
-	updateCharacter(y_Set,a,b,px,py,changeX.y)
+	updateCharacter(y_Set,a,b,px,py)
 	if xaload == 0 then loadYuri() end
 end
 
 function updateNatsuki(a,b,px,py)
-	updateCharacter(n_Set,a,b,px,py,changeX.n)
+	updateCharacter(n_Set,a,b,px,py)
 	if xaload == 0 then loadNatsuki() end
 end
 
 function updateMonika(a,b,px,py)
-	updateCharacter(m_Set,a,b,px,py,changeX.m)
+	updateCharacter(m_Set,a,b,px,py)
 	if xaload == 0 then loadMonika() end
 end
 
-function hideCharacter(set,chset)
-	if xaload == 0 then
-		chset.x = set.x
-		if chset.x >= 300 then
-			chset.y = 1955
-			chset.z = chset.y - chset.x
-		else
-			chset.y = -675
-			chset.z = chset.x - chset.y
-		end
-	end
+function hideCharacter(set)
+	set.a = ''
+	set.b = ''
+	set.x = -200
+	set.y = 0
 end
 
 function hideSayori()
-	hideCharacter(s_Set,changeX.s)
+	hideCharacter(s_Set)
+	--unloadSayori()
 end
 
 function hideYuri()
-	hideCharacter(y_Set,changeX.y)
+	hideCharacter(y_Set)
+	--unloadYuri()
 end
 
 function hideNatsuki()
-	hideCharacter(n_Set,changeX.n)
+	hideCharacter(n_Set)
+	--unloadNatsuki()
 end
 
 function hideMonika()
-	hideCharacter(m_Set,changeX.m)
+	hideCharacter(m_Set)
+	--unloadMonika()
 end
 
 function hideAll()
-    s_Set = {a='',b='',x=-675,y=s_Set.y}
-    y_Set = {a='',b='',x=-675,y=y_Set.y}
-    n_Set = {a='',b='',x=-675,y=n_Set.y}
-    m_Set = {a='',b='',x=-675,y=m_Set.y}
+    s_Set = {a='',b='',x=-200,y=0}
+    y_Set = {a='',b='',x=-200,y=0}
+    n_Set = {a='',b='',x=-200,y=0}
+    m_Set = {a='',b='',x=-200,y=0}
 	unloadAll()
 end
 
-function drawCharacter(l,r,a,set,chset)
+function drawCharacter(asset,set)
 	if set.b~='' then
 		if set == n_Set and n_Set.a=='5' or n_Set.a=='5b' then --set natsuki's head x and y pos
-			xh = set.x + 7
-			yh = set.y + 18
+			xh = set.x + 4
+			yh = set.y + 6
 		else
 			xh = set.x
 			yh = set.y
 		end
-		if a then lg.draw(a,xh,yh) end
+		if asset[set.b] then
+			if pcall(love.graphics.set3D, true) == true then
+				love.graphics.setDepth(1)
+			end
+			lg.draw(asset[set.b],xh,yh)
+		end
 	end
 	
-	lg.draw(l, set.x, set.y)
+	if asset[asset.lr[1]] then
+		lg.draw(asset[asset.lr[1]], set.x, set.y)
+	elseif asset[set.a] then
+		lg.draw(asset[set.a], set.x, set.y)
+	end
     
     local with_set = with_r
 	if set == y_Set then
@@ -334,31 +308,23 @@ function drawCharacter(l,r,a,set,chset)
 	end
 	for i = 1, #with_set do
 		if set.a == with_set[i] then
-			lg.draw(r, set.x, set.y)
+			lg.draw(asset[asset.lr[2]], set.x, set.y)
 		end
-	end
-	
-	if set.x < chset.y and not nearest(set.x,chset.y) and autoskip < 1 then
-		set.x = math.ceil(chset.x + easeQuadInOut(unitimer,0,chset.z,uniduration))
-	elseif set.x > chset.y and not nearest(set.x,chset.y) and autoskip < 1 then
-		set.x = math.floor(chset.x - easeQuadInOut(unitimer,0,chset.z,uniduration))
-	elseif set.x ~= chset.y then
-		set.x = chset.y
 	end
 end
 
 function drawSayori()
-	drawCharacter(sl,sr,s_a,s_Set,changeX.s)
+	drawCharacter(s_Asset,s_Set)
 end
 
 function drawYuri()
-	drawCharacter(yl,yr,y_a,y_Set,changeX.y)
+	drawCharacter(y_Asset,y_Set)
 end
 
 function drawNatsuki()
-	drawCharacter(nl,nr,n_a,n_Set,changeX.n)
+	drawCharacter(n_Asset,n_Set)
 end
 
 function drawMonika()
-	drawCharacter(ml,mr,m_a,m_Set,changeX.m)
+	drawCharacter(m_Asset,m_Set)
 end
