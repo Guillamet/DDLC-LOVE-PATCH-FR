@@ -13,96 +13,96 @@ function ch0script()
 	elseif cl == 5 then
 		cw('bl','Nous allions à l\'école ensemble, comme aujourd\'hui, mais dès le lycée, elle a eu de plus en plus de pannes de réveil et j\'ai fini par en avoir marre de l\'attendre.')
 	elseif cl == 6 then
-		cw('bl','But if she\'s going to chase after me like this, I almost feel better off running away.')
+		cw('bl','Mais si elle me poursuit ainsi, j\'aurais presque envie de fuir.')
 	elseif cl == 7 then
-		cw('bl','However, I just sigh and idle in front of the crosswalk and let Sayori catch up to me.')
+		cw('bl','Cependant, je me contente de soupirer et patiente devant le passage piéton, permettant à Sayori de me rattraper.')
 	elseif cl == 8 then
 		updateSayori('4','p',80)
-		cw('s',"Haaahhh...haaahhh...")
+		cw('s',"Ha... ha...")
 	elseif cl == 9 then 
-		cw('s',"I overslept again!")
+		cw('s',"J'ai encore trop dormi !")
 	elseif cl == 10 then 
-		cw('s',"But I caught you this time!")
+		cw('s',"Mais cette fois, je t'ai rattrapé !")
     elseif cl == 11 then
-		cw('mc',"Maybe, but only because I decided to stop and wait for you.")
+		cw('mc',"Peut-être, mais seulement parce que j'ai décidé de m'arrêter.")
 	elseif cl == 12 then
 		updateSayori('5c')
-		cw('s',"Eeehhhhh, you say that like you were thinking about ignoring me!")
+		cw('s',"Hein ! Tu dis ça comme si tu avais déjà pensé à m'ignorer !")
 	elseif cl == 13 then 
-		cw('s',"That\'s mean, " .. player .. "!")
+		cw('s',"C\'est méchant," .. player .. "!")
 	elseif cl == 14 then
-		cw('mc',"Well, if people stare at you for acting weird then I don't want them to think we're a couple or something.")
+		cw('mc',"Bah, si les gens te fixent parce que tu as agi bizarrement, je ne veux pas qu'ils pensent qu'on forme un couple ou quoi.")
 	elseif cl == 15 then
 		updateSayori('1','a')
-		cw('s',"Fine, fine.")
+		cw('s',"D'accord.")
 	elseif cl == 16 then 
-		cw('s',"But you did wait for me, after all.")
+		cw('s',"Mais tu m'as bien attendue, en fin de compte.")
 	elseif cl == 17 then
-		cw('s',"I guess you don't have it in you to be mean even if you want to~")
+		cw('s',"J'imagine que tu n'es pas aussi méchant que tu ne le laisses paraître...")
 	elseif cl == 18 then
-		cw('mc',"Whatever you say, Sayori...")
+		cw('mc',"Qu'importe, Sayori...")
 	elseif cl == 19 then
 		updateSayori('1','q')
-		cw('s',"Ehehe~")
+		cw('s',"Héhéhé !")
 	elseif cl == 20 then
 		hideSayori()
-		cw('bl','We cross the street together and make our way to school.')
+		cw('bl','Nous traversons ensemble la rue et nous nous dirigeons vers l\'école.')
 	elseif cl == 21 then
-		cw('bl','As we draw near, the streets become increasingly speckled with other students making their daily commute.')
+		cw('bl','Tandis que nous nous approchons, les rues deviennent de plus en plus peuplées, avec d\'autres élèves effectuant leurs trajets quotidiens.')
 	elseif cl == 22 then
 		updateSayori('3','a',80)
-		cw('s','By the way, ' .. player .. '...')
+		cw('s','Au fait, ' .. player .. '...')
 	elseif cl == 23 then 
-		cw('s',"Have you decided on a club to join yet?")
+		cw('s',"Tu t'es décidé à rejoindre un club ?")
 	elseif cl == 24 then
-		cw('mc',"A club?")
+		cw('mc',"Un club ?")
 	elseif cl == 25 then
-		cw('mc',"I told you already, I\'m really not interested in joining any clubs.")
+		cw('mc',"Je te l'ai déjà dit, je ne suis intéressé par aucun club.")
 	elseif cl == 26 then 
-		cw('mc',"I haven't been looking, either.")
+		cw('mc',"Faut dire que je n'ai pas cherché, non plus.")
 	elseif cl == 27 then
 		updateSayori('4','h')
-		cw('s',"Eh? That's not true!")
+		cw('s',"Hein ? C'est pas vrai !")
 	elseif cl == 28 then
-		cw('s',"You told me you would join a club this year!")
+		cw('s',"Tu m'as dit que tu rejoindrais un club, cette année !")
 	elseif cl == 29 then
-		cw('mc',"Did I...?")
+		cw('mc',"J'ai dit ça ?")
 	elseif cl == 30 then
-		cw('bl','I\'m sure it\'s possible that I did, in one of our many conversations where I dismissively go along with whatever she\'s going on about.')
+		cw('bl','Je suis sûr qu\'il est possible que j\'ai dit ça, dans l\'une de nos nombreuses discussions où j\'acquiesce à tout ce qu\'elle raconte.')
 	elseif cl == 31 then
-		cw('bl','Sayori likes to worry a little too much about me, when I\'m perfectly content just getting by on the average while spending my free time on games and anime.')
+		cw('bl','Sayori aime un peu trop se préoccuper de moi, alors que ça me va parfaitement d\'être comme les autres, tout en passant mon temps libre sur les jeux et les animés.')
 	elseif cl == 32 then
 		updateSayori('4','j')
-		cw('s',"Uh-huh!")
+		cw('s',"Hum...")
 	elseif cl == 33 then
-		cw('s',"I was talking about how I\'m worried that you won\'t learn how to socialize or have any skills before college.")
+		cw('s',"Je parlais du fait que je suis inquiète que tu n'apprennes pas à te sociabiliser ou que tu n'acquières pas de compétences avant l'université.")
 	elseif cl == 34 then
-		cw('s',"Your happiness is really important to me, you know!")
+		cw('s',"Ton bonheur compte vraiment pour moi, tu sais !")
 	elseif cl == 35 then
-		cw('s',"And I know you\'re happy now, but I\'d die at the thought of you becoming a NEET in a few years because you\'re not used to the real world!")
+		cw('s',"Et je sais que tu es heureux, là, mais je mourrais à l'idée que tu deviennes un NEET d'ici quelques années, parce que tu n'auras pas été habitué au vrai monde !")
 	elseif cl == 36 then
 		updateSayori('4','g')
-		cw('s',"You trust me, right?")
+		cw('s',"Tu me fais confiance, pas vrai ?")
 	elseif cl == 37 then
-		cw('s',"Don't make me keep worrying about you...")
+		cw('s',"Arrête de me pousser à m'inquiéter à ton sujet...")
 	elseif cl == 38 then 
-		cw('mc',"Alright, alright...")
+		cw('mc',"D'accord, d'accord...")
 	elseif cl == 39 then
-		cw('mc',"I'll look at a few clubs if it makes you happy.")
+		cw('mc',"Je vais jeter un œil à quelques clubs, si ça te fait plaisir.")
 	elseif cl == 40 then 
-		cw('mc',"No promises, though.")
+		cw('mc',"Je promets rien, par contre.")
 	elseif cl == 41 then
 		updateSayori('1','h')
-		cw('s',"Will you at least promise me you'll try a little?")
+		cw('s',"Pourras-tu au moins me promettre que tu essayeras, un peu ?")
 	elseif cl == 42 then
-		cw('mc',"Yeah, I guess I'll promise you that.")
+		cw('mc',"Mouais, j'imagine que je peux te promettre ça.")
 	elseif cl == 43 then
 		updateSayori('4','r')
-		cw('s',"Yaay~!")
+		cw('s',"Super !")
 	elseif cl == 44 then
-		cw('bl','Why do I let myself get lectured by such a carefree girl?')
+		cw('bl','Pourquoi est-ce que je me laisse sermonner par une fille aussi insouciante ?')
 	elseif cl == 45 then
-		cw('bl','More than that, I\'m surprised I even let myself relent to her.')
+		cw('bl','Mais surtout, je suis surpris de me retrouver à céder à ses caprices.')
 	elseif cl == 46 then
 		cw('bl','I guess seeing her worry so much about me makes me want to ease her mind at least a little bit - even if she does exaggerate everything inside of her head.')
 	elseif cl == 47 then
